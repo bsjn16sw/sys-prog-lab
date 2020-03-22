@@ -297,6 +297,8 @@ char *strstr (const char *str, const char *substr)
         else
             j = 0; k = 0;
     }
+    
+    return NULL;
 }
 
 char *strtok (char *str, const char *delim)
