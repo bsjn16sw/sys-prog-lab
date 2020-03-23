@@ -21,7 +21,7 @@ int convert(const char *input)
     int fd_in, fd_out;
     int len, len1, len2, len3, len_write;
     int i, j, k, r = 0, n = 0;
-    int convert_flag = 0;
+    int free_case = 0;
     char *buf, *buf1, *buf2, *buf3, *ext, *tmp, *output;
     char err_msg[] = "Error occurred!\n";
 
@@ -53,8 +53,6 @@ int convert(const char *input)
 
     // Case 1) convert to unix style
     if((r>0 && r==n) || (r>0 && r!=n && n-r>=r)){
-        convert_flag = 1;
-
         // Unify newline characters
         buf1 = (char*)malloc(sizeof(char) * len);
         len1 = len;
@@ -91,7 +89,8 @@ int convert(const char *input)
 
         // Convert 8 spaces to 1 tab
         ext = strstr(input, ".");
-        if(!strcmp(ext, ".c") || !strcmp(ext, ".h") || !strcmp(ext, ".java") || !strcmp(ext, ".txt")){
+        if(!strcmp(ext, ".c") || !strcmp(ext, ".h") || !strcmp(ext, ".java")){
+            free_case = 1;
             buf3 = (char*)malloc(sizeof(char) * len2);
             len3 = len2;
 
@@ -109,6 +108,7 @@ int convert(const char *input)
                 strncat(buf3, buf2 + j, len2 - j);
         }
         else{
+            free_case = 2;
             buf3 = buf2;
             len3 = len2;
         }
@@ -116,7 +116,7 @@ int convert(const char *input)
 
     // Case 2) convert to dos style
     else if((r==0 && n>0) || (r>0 && r!=n && n-r<r)){
-        convert_flag = 1;
+        free_case = 1;
 
         // Unify newline characters
         buf1 = (char*)malloc(sizeof(char) * len * 2);
@@ -154,33 +154,26 @@ int convert(const char *input)
             strncat(buf2, buf1 + j, len1 - j);
 
         // Convert 1 tab to 4 spaces
-        ext = strstr(input, ".");
-        if(!strcmp(ext, ".c") || !strcmp(ext, ".h") || !strcmp(ext, ".java") || !strcmp(ext, ".txt")){
-            buf3 = (char*)malloc(sizeof(char) * len2 * 3);
-            len3 = len2;
+        buf3 = (char*)malloc(sizeof(char) * len2 * 3);
+        len3 = len2;
 
-            tmp = strstr(buf2, "\t");
-            j = 0;
-            while(tmp != NULL){
-                strncat(buf3, buf2 + j, tmp - (buf2 + j));
-                strncat(buf3, "    ", 4);
-                j = tmp - buf2 + 1;
-                len3 += 3;
-                tmp = strstr(buf2 + j, "\t");
-            }
+        tmp = strstr(buf2, "\t");
+        j = 0;
+        while(tmp != NULL){
+            strncat(buf3, buf2 + j, tmp - (buf2 + j));
+            strncat(buf3, "    ", 4);
+            j = tmp - buf2 + 1;
+            len3 += 3;
+            tmp = strstr(buf2 + j, "\t");
+        }
 
-            if(buf2 + j != NULL)
-                strncat(buf3, buf2 + j, len2 - j);
-        }
-        else{
-            buf3 = buf2;
-            len3 = len2;
-        }
+        if(buf2 + j != NULL)
+            strncat(buf3, buf2 + j, len2 - j);
     }
 
     // Case 3) no work
     else{
-        convert_flag = 0;
+        free_case = 3;
         buf3 = buf;
         len3 = len;
     }
@@ -211,11 +204,15 @@ int convert(const char *input)
     printf("Input:%s Ouput:%s Size:%d\n", input, output, len3);
 
     // Free memory
-    if(convert_flag){
-        free(buf); free(buf1); free(buf2); free(buf3);
-    }
-    else{
-        free(buf);
+    switch(free_case){
+        case 1:
+            free(buf); free(buf1); free(buf2); free(buf3);
+            break;
+        case 2:
+            free(buf); free(buf1); free(buf2);
+            break;
+        case 3:
+            free(buf);
     }
 
     return 0;
