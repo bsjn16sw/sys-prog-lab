@@ -28,10 +28,10 @@ The objectives of this project are doing file I/O in unix and normalizing the te
 Since there are 3 steps to convert, I dynamically allocated spaces several times. It was better to declare char array but it was impossible because the length of input file is not given. So I used `malloc()` several times and I also had to use `free()` several times. The difficult point was that I had to use `free()` differently for each cases (e.g. source file to unix format, normal file to unix format, any file to dos format, no convert). If I free memory that I did not dynamically allocate before, segmentation fault can occur. 
 
 ### Practice
-There are 6 files and 1 data directory. You can check the result of this project by just entering `make` and `./convert` in shell. I already uploaded some example input files in `/data`. If you want to experiment with other example input files or your own input files, revise `main.c`. The convert cases and result messages of example input files are below:  
+There are 6 files and 1 directory. There are 6 example input files in directory named `data`. You can check the result of this project by just entering `make` and `./convert` in shell. Then, result message will be printed and output file whose name is (input file name) + '.out' will be generated. If you want to see characters and backslash escapes in input and output file, use command `od -c <file_name>` in shell. And if you want to experiment with other example input files or your own input files, revise `main.c`. The convert cases and result messages of example input files are below:  
 
 |Input|num(CR)|num(LF)|Convert|
-|--|--|--|--|
+|--|:--:|:--:|--|
 |hello1.txt|0|4|to dos format|
 |hello2.txt|4|4|to unix format (normal file)|
 |hello3.java|2|4|to unix format (source file)|
@@ -47,3 +47,8 @@ Input:hello4.java Ouput:hello4.java.out Size:47
 Input:hello5.txt Ouput:hello5.txt.out Size:56
 Input:hello6.txt Ouput:hello6.txt.out Size:8
 ```
+
+Here is an example of result of `od -c` command:  
+<p align="center">
+<img src="/img/pa1.png" alt="PA1" height="40%" width="40%" align="middle">
+</p>
